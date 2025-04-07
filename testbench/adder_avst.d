@@ -428,7 +428,7 @@ class random_test: uvm_test
   override void run_phase(uvm_phase phase) {
     phase.get_objection().set_drain_time(this, 100.nsec);
     phase.raise_objection(this);
-    auto rand_sequence = new avst_seq("avst_seq");
+    avst_seq rand_sequence = avst_seq.type_id.create("avst_seq");
 
     for (size_t i=0; i!=100; ++i) {
       rand_sequence.randomize();

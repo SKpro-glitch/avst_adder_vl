@@ -2,13 +2,15 @@ CC              = gcc
 CFLAGS		= -Wall -O3 -fPIC
 SEED            = 1
 
-DFLAGS = -relocation-model=pic -w
+DFLAGS = -relocation-model=pic -w -O3
 
 LDC2BINDIR = $(dir $(shell which ldc2))
 VLBINDIR = $(dir $(shell which verilator))
-VERBOSITY = LOW
+VERBOSITY = NONE
 
 VLATOR_SRC = euvm_dir/Vadder_avst_euvm.d euvm_dir/Vadder_avst_euvm_funcs.cpp obj_dir/Vadder_avst.cpp obj_dir/Vadder_avst.h
+
+.PHONY: all clean
 
 all: avst_adder
 
@@ -20,7 +22,7 @@ run: avst_adder
 
 verilator.stamp: ../rtl/adder_avst.v
 	touch verilator.stamp
-	verilator --threads 1 --trace --cc --euvm $^
+	verilator --no-timing --threads 1 --trace --cc --euvm $^
 	(cd euvm_dir; g++ -c -I ../obj_dir/ -I $(VLBINDIR)/../share/verilator/include Vadder_avst_euvm_funcs.cpp)
 	(cd euvm_dir; g++ -c -I ../obj_dir/ -I $(VLBINDIR)/../share/verilator/include $(LDC2BINDIR)/../import/esdl/intf/verilator/cpp/verilated_vcd_d.cpp -o verilated_vcd_d.o)
 	(cd euvm_dir; g++ -c -I ../obj_dir/ -I $(VLBINDIR)/../share/verilator/include $(LDC2BINDIR)/../import/esdl/intf/verilator/cpp/verilated_d.cpp -o verilated_d.o)
@@ -29,7 +31,9 @@ verilator.stamp: ../rtl/adder_avst.v
 euvm_dir/Vadder_avst_euvm.d euvm_dir/Vadder_avst_euvm_funcs.o euvm_dir/verilated_vcd_d.o obj_dir/Vadder_avst__ALL.a obj_dir/verilated.o: verilator.stamp
 
 
-avst_adder: ../testbench/adder_avst.d euvm_dir/Vadder_avst_euvm.d  \
+avst_adder: ../testbench/adder_avst.d ../testbench/adder_avst_ext.d \
+	   ../testbench/adder_avst_256.d \
+	   euvm_dir/Vadder_avst_euvm.d  \
 	   $(LDC2BINDIR)/../import/esdl/intf/verilator/trace.d \
 	   euvm_dir/verilated_vcd_d.o euvm_dir/verilated_d.o \
 	   euvm_dir/Vadder_avst_euvm_funcs.o  \
@@ -39,3 +43,5 @@ avst_adder: ../testbench/adder_avst.d euvm_dir/Vadder_avst_euvm.d  \
 	ldc2 $(DFLAGS) -Ieuvm_dir -link-defaultlib-shared -of$@ -L-luvm-ldc-shared -L-lesdl-ldc-shared -L-lz3 \
 		-L-lphobos2-ldc-shared -L-ldl $^ -L-lstdc++
 
+run_overide: avst_adder
+	./avst_adder +UVM_TESTNAME=adder_avst.random_test +UVM_VERBOSITY=$(VERBOSITY) +random_seed=$(SEED) +UVM_SET_TYPE_OVERRIDE=adder_avst.avst_item,adder_avst_ext.avst_ext_item # +UVM_OBJECTION_TRACE
