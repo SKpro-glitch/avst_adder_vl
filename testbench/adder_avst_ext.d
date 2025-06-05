@@ -1,6 +1,6 @@
 import uvm;
 import esdl;
-import adder_avst;
+import avst_item;
 
 class avst_ext_item: avst_item
 {
