@@ -2,7 +2,7 @@ module adder_avst_256;
 
 import esdl;
 import uvm;
-import adder_avst;
+import avst_seq;
 
 class avst_seq_256: avst_seq
 {
