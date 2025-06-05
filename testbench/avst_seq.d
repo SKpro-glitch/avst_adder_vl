@@ -1,3 +1,4 @@
+module avst_seq;
 import esdl;
 import uvm;
 import std.stdio;
