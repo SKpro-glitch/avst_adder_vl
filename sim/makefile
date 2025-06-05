@@ -18,7 +18,7 @@ clean:
 	rm -rf avst_adder* euvm_dir obj_dir verilator.stamp
 
 run: avst_adder
-	./avst_adder +UVM_TESTNAME=adder_avst.random_test +UVM_VERBOSITY=$(VERBOSITY) +random_seed=$(SEED) # +UVM_OBJECTION_TRACE
+	./avst_adder +UVM_TESTNAME=random_test +UVM_VERBOSITY=$(VERBOSITY) +random_seed=$(SEED) # +UVM_OBJECTION_TRACE
 
 verilator.stamp: ../rtl/adder_avst.v
 	touch verilator.stamp
@@ -31,7 +31,7 @@ verilator.stamp: ../rtl/adder_avst.v
 euvm_dir/Vadder_avst_euvm.d euvm_dir/Vadder_avst_euvm_funcs.o euvm_dir/verilated_vcd_d.o obj_dir/Vadder_avst__ALL.a obj_dir/verilated.o: verilator.stamp
 
 
-avst_adder: ../testbench/adder_avst.d ../testbench/adder_avst_ext.d \
+avst_adder: ../testbench/main.d ../testbench/adder_avst_ext.d \
 	   ../testbench/adder_avst_256.d \
 	   euvm_dir/Vadder_avst_euvm.d  \
 	   $(LDC2BINDIR)/../import/esdl/intf/verilator/trace.d \
@@ -44,4 +44,4 @@ avst_adder: ../testbench/adder_avst.d ../testbench/adder_avst_ext.d \
 		-L-lphobos2-ldc-shared -L-ldl $^ -L-lstdc++
 
 run_overide: avst_adder
-	./avst_adder +UVM_TESTNAME=adder_avst.random_test +UVM_VERBOSITY=$(VERBOSITY) +random_seed=$(SEED) +UVM_SET_TYPE_OVERRIDE=adder_avst.avst_item,adder_avst_ext.avst_ext_item # +UVM_OBJECTION_TRACE
+	./avst_adder +UVM_TESTNAME=random_test +UVM_VERBOSITY=$(VERBOSITY) +random_seed=$(SEED) +UVM_SET_TYPE_OVERRIDE=avst_item,adder_avst_ext.avst_ext_item # +UVM_OBJECTION_TRACE
