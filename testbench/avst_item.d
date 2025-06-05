@@ -1,3 +1,5 @@
+module avst_item;
+
 import esdl;
 import uvm;
 import std.stdio;
